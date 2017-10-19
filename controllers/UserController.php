@@ -100,8 +100,7 @@ class UserController
           ///      header("Location: /cabinet");
           //      header( 'Location: /cabinet' );
           //      header("Location: /cabinet");
-               
-                header('Location: http://guestbook/cabinet', true, 303);
+                
              //   require_once(ROOT . '/cabinet');
             }
         }
