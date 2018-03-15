@@ -45,7 +45,7 @@ class UserController
                 $errors[] = 'Пароль не должен быть короче 6-ти символов';
             }
             
-            if (! User::checkConfirmPassword($password,$rpassword)) {
+            if (! User::checkConfirmPassword($password, $rpassword)) {
                 $errors[] = 'Пароли не совпадают';
             }
             if (User::checkEmailExists($email)) {
@@ -69,43 +69,39 @@ class UserController
     public function actionLogin()
     {
         // Переменные для формы
-        $login = false;
+        $email = false;
         $password = false;
         
         // Обработка формы
         if (isset($_POST['logIn'])) {
             // Если форма отправлена
             // Получаем данные из формы
-            $login = $_POST['login'];
+            $email = $_POST['email'];
             $password = $_POST['password'];
             // Флаг ошибок
             $errors = false;
             // Валидация полей
-             
-            if (!User::checkPassword($password)) {
+            
+            if (! User::checkPassword($password)) {
                 $errors[] = 'Пароль не должен быть короче 6-ти символов';
             }
             // Проверяем существует ли пользователь
-            $userId = User::checkUserData($login, $password);
+            $userId = User::checkUserData($email, $password);
             if ($userId == false) {
                 // Если данные неправильные - показываем ошибку
                 $errors[] = 'Неправильные данные для входа на сайт';
-                
             } else {
                 // Если данные правильные, запоминаем пользователя (сессия)
                 User::auth($userId);
                 // Перенаправляем пользователя в закрытую часть - кабинет
                 
-              //  header("Location: http://www.example.com/"); 
-          ///      header("Location: /cabinet");
-          //      header( 'Location: /cabinet' );
-          //      header("Location: /cabinet");
+                header("Location: /cabinet");
                 
-             //   require_once(ROOT . '/cabinet');
+                // require_once(ROOT . '/cabinet');
             }
         }
         // Подключаем вид
-        require_once(ROOT . '/views/user/login.php');
+        require_once (ROOT . '/views/user/login.php');
         return true;
     }
 
@@ -121,6 +117,6 @@ class UserController
         unset($_SESSION["user"]);
         
         // Перенаправляем пользователя на главную страницу
-        header("Location: /");
+        header("Location: /message");
     }
 }

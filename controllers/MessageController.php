@@ -1,20 +1,116 @@
 <?php
 use models\Message;
+use models\Picture;
 
 include_once ROOT . '/models/Message.php';
+include_once ROOT . '/models/Picture.php';
 include_once ROOT . '/components/Pagination.php';
 
 class MessageController
 {
 
-    public function actionIndex($page=1)
+    public function actionAbout()
     {
-        $this->pushButton();     
+        require_once (ROOT . '/views/message/about.php');
+    }
+    public function actionGallery($id)
+    {
+        $pictureList = Picture::searсhPicturesPAthForMessageId($id);
+        require_once (ROOT . '/views/message/gallery.php');
+    }
+
+    public function genereteRandomWord()
+    {
+        $key = '';
+        $array = array_merge(range('A', 'Z'), range('a', 'z'), range('0', '9'));
+        $c = count($array);
+        for ($j = 0; $j < 10; $j ++) {
+            $key .= $array[rand(0, $c)];
+        }
+        return $key;
+    }
+
+    public function loadPictures()
+    {
+        
+    }
+    
+    
+    // actionсreate
+    public function actionCreate()
+    {
+        $title = null;
+        $text = null; 
+        print date("Y-m-d H:i:s");
+        if (isset($_POST['submit'])) {
+           $idMessage =  Message::createMessage(); 
+            // /////////////////////Загрузка фотографий////////////////////////////////////////////////
+            $nameMass = 'pictures'; 
+            $allowed_filetypes = array(
+                '.jpg',
+                '.JPG',
+                '.Jpg', 
+                '.bmp',
+                '.BMP',
+                '.Bmp',
+                '.png',
+                '.PNG',
+                '.Png'
+            ); // допустимые форматы.
+            $max_filesize = 524288; // Допустимый размер загружаемого файла.;
+            $upload_path = 'files/'; // Директория для загрузки. 
+      
+            for ($i = 0; $i < sizeof($_FILES[$nameMass]['name']); $i ++) {  
+                if ($_FILES[$nameMass]['name'][$i]==NULL){
+                    break;
+                }
+                $filename = self::genereteRandomWord() . ".jpg"; 
+                $ext = substr($filename, strpos($filename, '.'), strlen($filename) - 1);
+                if (strlen($_FILES[$nameMass]['tmp_name'][$i]) < 1)
+                    echo('Сперва укажите файл для загрузки.');
+                if (! in_array($ext, $allowed_filetypes))
+                    echo('Данный формат не поддерживается.');
+                if (filesize($_FILES[$nameMass]['tmp_name'][$i]) > $max_filesize)
+                    echo('Файл превышает допустимые значения.');
+                if (! is_writable($upload_path))
+                    echo('Директория закрыта от записи. обратитесь к системному администратору.');
+                if (move_uploaded_file($_FILES[$nameMass]['tmp_name'][$i], $upload_path . $filename))
+                    echo ('Ваш фаил успешно загружен. <a href="' . $upload_path . $filename . '">');
+                    else{
+                    echo 'При загрузке возникли ошибки. Попробуйте ещё раз.';
+                    } 
+                    Picture::createPicture($upload_path . $filename, $idMessage);
+            }
+        }
+        
+        require_once (ROOT . '/views/message/create.php');
+    }
+
+    public function actionDelete($id)
+    {
+        session_start();
+        $_SESSION['user'];
+        $user = User::getUserById($_SESSION['user']);
+        Message::deleteMessage($id);
+        header("Location: /cabinet");
+    }
+
+    public function actionIndex($page = 1)
+    {
+        $date = null;
+        $firstname = null;
+        $lastname = null;
+        $homepage = null;
+        $email = null;
+        $password = null;
+        $userId = null;
+        $this->pushButton();
         $messageList = array();
         $messageList = Message::getMessageList($page);
         $total = Message::getTotalMessages();
         $pagination = new Pagination($total, $page, Message::SHOW_BY_DEFAULT, 'p-');
-
+        $userId = User::checkLogged(); 
+        
         require_once (ROOT . '/views/message/index.php');
         return true;
     }
@@ -32,10 +128,7 @@ class MessageController
         
         return true;
     }
-  
-    
-    
-    
+
     private function pushButton()
     {
         if (isset($_POST['button'])) {
@@ -46,11 +139,10 @@ class MessageController
             }
         }
     }
-        
-    
+
     private function getReCAPTCHA()
     {
-        $secret = '6Lf2iDMUAAAAAKaBulOx1uBOQuaggKDnCxon_AQl';
+        $secret = '6LcVYUkUAAAAAHc5Yv_2pMDuWxKqfEdeCm27wXvZ';
         $response = $_POST['g-recaptcha-response'];
         $remoteip = $_SERVER['REMOTE_ADDR'];
         

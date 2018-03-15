@@ -26,12 +26,19 @@ class Router
             if (preg_match("~$uriPattern~", $uri)) {
                 $internalRoute = preg_replace("~$uriPattern~", $path, $uri);
                 
-            
+                $segments = explode('/', $internalRoute);
                 
-                $segments = explode('/', $internalRoute); 
+                if (in_array('Guestbook', $segments)) {
+                    unset($segments[array_search('Guestbook', $segments)]);
+                    
+                    if (in_array('index.php', $segments)) {
+                        unset($segments[array_search('index.php', $segments)]);
+                    }
+                }
+                
                 $controllerName = array_shift($segments) . 'Controller';
                 $controllerName = ucfirst($controllerName);
-               
+                
                 $actionName = 'action' . ucfirst(array_shift($segments));
                 
                 $parameters = $segments;

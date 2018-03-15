@@ -1,40 +1,48 @@
+<?php
+use models\Picture;
+
+?>
 
 <?php include ROOT . '/views/layouts/header.php'; ?>
-<a href="../user/login">Войти</a>
-<a href="../user/register">Регистрация</a>
-<form action="#" method="post">
-	<p>
-		Name: <input type="text" name="name" />
-	</p>
-	<p>
-		Email: <input type="text" name="email" />
-	</p>
-	<p>Text:</p>
-	<p>
-		<textarea rows="10" cols="45" name="text"></textarea>
-	</p>
-
-	<div class="g-recaptcha"
-		data-sitekey="6Lf2iDMUAAAAAKcNpF7PLUGk1CV7naXGID7W7NUO"></div>
-	<input name="button" type="submit" value="Отправить" />
-
-</form>
-
-<hr></hr>
-<?php foreach ($messageList as $messageItem):?>
-<br>
-Number of message: <?php echo $messageItem['id'] ;?></br>
-<br>
-Text: <?php echo $messageItem['text'] ;?><br>
-<br>
-Email: <?php echo $messageItem['email'] ;?></br>
-<br>
-Name: <?php echo $messageItem['name'] ;?></br>
-<br>
-Picture: <?php echo $messageItem['picture_path'] ;?></br>
-<hr></hr>
+<div class="text-center">
+	<h1>Список отзывов</h1>
+</div>
+<div class="container">
+	<div class="row">
+<?php foreach ($messageList as $messageItem):?> 
+ <div class="col-sm-6 col-md-4">
+			<div class="thumbnail">
+				<div class="caption">
+					<b class="spoiler-title"><h3 title="Нажмите, чтобы увидеть отзыв"><?php echo $messageItem['title'] ;?></h3></b>
+					<div class="spoiler-body" style="display: block;">
+						<p>  <?php echo $messageItem['text'] ;?></p>
+						<img
+							alt="<?php echo Picture::searсhFirstPicturePAthForMessageId($messageItem['id'])?>"
+							class="img-thumbnail"
+							src="../<?php echo Picture::searсhFirstPicturePAthForMessageId($messageItem['id'])?>">
+						<div class="text-center">
+							<a href="../gallery/<?php echo $messageItem['id']?>">
+								<button type="button" class="btn btn-primary btn-xs">Посмотреть
+									фото в полном размере (<?php echo Picture::getTotalPictureForMessage($messageItem['id'])?>)</button>
+							</a>
+						</div>
+					</div>
+					<br>
+				</div>
+			</div>
+		</div> 
 <?php endforeach;?>
-     <?php echo $pagination->get();?>	
-	
+</div>
+</div>
+<?php if ($userId) {?>
+<div class="text-center">
+	<a href="../createMessage">Создать отзыв</a>
+</div>
+<?php }?>
+<div class="text-center">
+	<ul class="pagination">
+       <?php echo $pagination->get();?>	
+    </ul>
+</div>
 
 <?php include ROOT . '/views/layouts/footer.php'; ?>

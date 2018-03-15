@@ -1,6 +1,6 @@
 <?php
 return array(
-    'host' => 'guestbook',
+    'host' => 'localhost',
     'dbname' => 'guestbook',
     'user' => 'root',
     'password' => '',

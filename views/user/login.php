@@ -1,29 +1,43 @@
-<html>
-<head></head>
-<body>
-	<h1>Вход</h1>
-	  
-
-                <?php if (isset($errors) && is_array($errors)): ?>
-                    <ul>
+ 
+<?php include ROOT . '/views/layouts/header.php'; ?>
+<?php if (isset($errors) && is_array($errors)): ?>
+<ul>
                         <?php foreach ($errors as $error): ?>
                             <li> - <?php echo $error; ?></li>
                         <?php endforeach; ?>
                     </ul>
-                <?php endif; ?>
-	
-	<form action="#" method="POST">
-		<p>
-			Логин<Br> <input type='text' name="login" cols="40" rows="3">
-			</textarea>
-		</p>
-		<p>
-			Пароль<Br> <input type='password' name="password" cols="40" rows="3">
-			</textarea>
-		</p>
+<?php endif; ?>
+<div class="container">
+	<div class="row">
 
-		<input type="submit" name="logIn" value="Войти">
-	</form>
-</body>
+		<div class="col-md-8 col-md-offset-2">
+			<form role="form" method="POST" action="#">
+				<legend class="text-center">Вход</legend>
+				<fieldset>
+					<div class="form-group col-md-12">
+						<label for="">Имейл</label> <input type="email"
+							class="form-control" name="email" id=""
+							placeholder="2krpromo@gmail.com" value="<?php echo $email?>">
+					</div>
 
-</html>
+					<div class="form-group col-md-12">
+						<label for="password">Пароль</label> <input type="password"
+							class="form-control" name="password"
+							value="<?php echo $password?>" id="password" placeholder="******">
+					</div>
+
+				</fieldset>
+				<div class="form-group">
+					<div class="col-md-12">
+						<button type="submit" name="logIn" class="btn btn-primary">
+							Ввойти</button>
+
+					</div>
+				</div>
+
+			</form>
+		</div>
+
+	</div>
+</div>
+<?php include ROOT . '/views/layouts/footer.php'; ?>

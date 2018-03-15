@@ -17,6 +17,7 @@ class User
      *            <p>Пароль</p>
      * @return boolean <p>Результат выполнения метода</p>
      */
+
     public static function register($login, $email, $password, $homepage, $firstname, $lastname)
     {
         // Соединение с БД
@@ -45,28 +46,28 @@ class User
      * @param string $password
      *            <p>Пароль</p>
      * @param string $lastname
-     *            <p>Фамилия </p>            
-     *             @param string $firstname
+     *            <p>Фамилия </p>
+     * @param string $firstname
      *            <p>Имя </p
-     *             @param string $email
+     * @param string $email
      *            <p>Почта </p>
-     *             @param string $homepage
+     * @param string $homepage
      *            <p>Домашняя страница </p>
      * @return boolean <p>Результат выполнения метода</p>
      */
-    public static function edit($id, $login, $password, $firstname, $lastname, $email, $homepage)
+ 
+    public static function edit($userId,   $password, $firstname, $lastname, $email, $homepage)
     {
         // Соединение с БД
         $db = Db::getConnection();
         // Текст запроса к БД
         $sql = "UPDATE user
-            SET login = :login, password = :password, firstname = :firstname,
+            SET  password = :password, firstname = :firstname,
             lastname = :lastname, email = :email, homepage = :homepage
             WHERE id = :id";
         // Получение и возврат результатов. Используется подготовленный запрос
         $result = $db->prepare($sql);
-        $result->bindParam(':id', $id, PDO::PARAM_INT);
-        $result->bindParam(':login', $login, PDO::PARAM_STR);
+        $result->bindParam(':id', $userId, PDO::PARAM_INT); 
         $result->bindParam(':password', $password, PDO::PARAM_STR);
         $result->bindParam(':firstname', $firstname, PDO::PARAM_STR);
         $result->bindParam(':lastname', $lastname, PDO::PARAM_STR);
@@ -84,21 +85,22 @@ class User
      *            <p>Пароль</p>
      * @return mixed : integer user id or false
      */
-    public static function checkUserData($login, $password)
+    public static function checkUserData($email, $password)
     {
         // Соединение с БД
         $db = Db::getConnection();
         // Текст запроса к БД
-        $sql = 'SELECT * FROM user WHERE login = :login AND password = :password';
+        $sql = 'SELECT * FROM user WHERE email = :email AND password = :password';
         // Получение результатов. Используется подготовленный запрос
         $result = $db->prepare($sql);
-        $result->bindParam(':login', $login, PDO::PARAM_INT);
+        $result->bindParam(':email', $email, PDO::PARAM_INT);
         $result->bindParam(':password', $password, PDO::PARAM_INT);
         $result->execute();
         // Обращаемся к записи
-        $user = $result->fetch(); 
+        $user = $result->fetch();
         if ($user) {
             // Если запись существует, возвращаем id пользователя
+            
             return $user['id'];
         }
         
@@ -112,9 +114,12 @@ class User
      *            <p>id пользователя</p>
      */
     public static function auth($userId)
+    
     {
+        session_start();
         // Записываем идентификатор пользователя в сессию
         $_SESSION['user'] = $userId;
+        echo "Записываем в сессию = " . $_SESSION['user'] . '<br>';
     }
 
     /**
@@ -126,11 +131,14 @@ class User
      */
     public static function checkLogged()
     {
+        session_start();
         // Если сессия есть, вернем идентификатор пользователя
         if (isset($_SESSION['user'])) {
             return $_SESSION['user'];
-        }
-        header("Location: /user/login");
+            echo "Тут сессия: " . $_SESSION['user'];
+        } else
+            echo "тут не сессия";
+        // header("Location: /user/login");
     }
 
     /**
